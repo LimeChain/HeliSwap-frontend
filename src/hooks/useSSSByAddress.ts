@@ -7,9 +7,10 @@ import { GET_SSS_BY_ADDRESS } from '../GraphQL/Queries';
 import { ISSSData } from '../interfaces/tokens';
 
 import { getProcessedSSS } from '../utils/farmUtils';
-import { idToAddress } from '../utils/tokenUtils';
 
 import { REFRESH_TIME } from '../constants';
+
+import useUserIdToAddress from './useUserIdToAddress';
 
 const useSSSByAddress = (
   useQueryOptions: QueryHookOptions = {},
@@ -22,8 +23,7 @@ const useSSSByAddress = (
 
   const [processingSss, setProcessingSss] = useState<boolean>(true);
   const [sss, setSss] = useState<ISSSData>({} as ISSSData);
-
-  const userAddress = userId ? idToAddress(userId) : '';
+  const userAddress = useUserIdToAddress(userId);
 
   const { loading, data, error, startPolling, stopPolling } = useQuery(GET_SSS_BY_ADDRESS, {
     variables: { userAddress, farmAddress: sssAddress },

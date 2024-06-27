@@ -14,7 +14,7 @@ import Button from '../components/Button';
 import ToasterWrapper from '../components/ToasterWrapper';
 
 import { timestampToDate, timestampToDateTime } from '../utils/timeUtils';
-import { addressToId, idToAddress } from '../utils/tokenUtils';
+import { addressToId, requestUserAddressFromId } from '../utils/tokenUtils';
 import { formatBigNumberToStringETH, formatStringETHtoPriceFormatted } from '../utils/numberUtils';
 
 import useGovernanceContract from '../hooks/useGovernanceContract';
@@ -136,7 +136,9 @@ const ProposalDetails = () => {
 
   const getKernelData = useCallback(async () => {
     try {
-      const promisesArray = [kernelContract.votingPower(idToAddress(userId))];
+      const userAddress = await requestUserAddressFromId(userId);
+
+      const promisesArray = [kernelContract.votingPower(userAddress)];
 
       const [votingPowerBN] = await Promise.all(promisesArray);
 
@@ -155,7 +157,8 @@ const ProposalDetails = () => {
 
   useEffect(() => {
     const getCreatorThreshold = async () => {
-      const votingPowerBN = await kernelContract.votingPower(idToAddress(userId));
+      const userAddress = await requestUserAddressFromId(userId);
+      const votingPowerBN = await kernelContract.votingPower(userAddress);
       const balanceBN = await kernelContract.heliStaked();
       const creatorThreshold = (votingPowerBN / balanceBN) * 100;
       setCreatorPaticipation(creatorThreshold);

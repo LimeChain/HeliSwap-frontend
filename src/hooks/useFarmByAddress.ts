@@ -7,9 +7,10 @@ import { GET_FARM_BY_ADDRESS } from '../GraphQL/Queries';
 import { IFarmData, IPoolData } from '../interfaces/tokens';
 
 import { getProcessedFarms } from '../utils/farmUtils';
-import { idToAddress } from '../utils/tokenUtils';
 
 import { REFRESH_TIME } from '../constants';
+
+import useUserIdToAddress from './useUserIdToAddress';
 
 const useFarmByAddress = (
   useQueryOptions: QueryHookOptions = {},
@@ -19,11 +20,9 @@ const useFarmByAddress = (
 ) => {
   const contextValue = useContext(GlobalContext);
   const { hbarPrice } = contextValue;
-
+  const userAddress = useUserIdToAddress(userId);
   const [processingFarms, setProcessingFarms] = useState<boolean>(true);
   const [farm, setFarm] = useState<IFarmData>({} as IFarmData);
-
-  const userAddress = userId ? idToAddress(userId) : '';
 
   const { loading, data, error, startPolling, stopPolling } = useQuery(GET_FARM_BY_ADDRESS, {
     variables: { farmAddress, userAddress },

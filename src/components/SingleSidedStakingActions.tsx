@@ -45,8 +45,8 @@ import {
   addressToId,
   calculatePercentageByShare,
   calculateShareByPercentage,
-  idToAddress,
   invalidInputTokensData,
+  requestAddressFromId,
 } from '../utils/tokenUtils';
 
 import { StakingStatus } from '../pages/SingleSidedStaking';
@@ -350,7 +350,8 @@ const FarmActions = ({
   const getHeliAllowance = useCallback(async () => {
     try {
       const kernelAddress = process.env.REACT_APP_KERNEL_ADDRESS as string;
-      const allowance = await tokenContract.allowance(idToAddress(userId), kernelAddress, {
+      const userAddress = await requestAddressFromId(userId);
+      const allowance = await tokenContract.allowance(userAddress, kernelAddress, {
         gasLimit: 300000,
       });
       setLpApproved(Number(allowance.toString()) > Number(lpInputValue));

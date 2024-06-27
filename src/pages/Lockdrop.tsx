@@ -17,7 +17,7 @@ import LockdropHowItWorks from '../components/LockdropHowItWorks';
 import Loader from '../components/Loader';
 import ToasterWrapper from '../components/ToasterWrapper';
 
-import { idToAddress } from '../utils/tokenUtils';
+import { requestUserAddressFromId } from '../utils/tokenUtils';
 import {
   calculateLPTokens,
   formatStringWeiToStringEther,
@@ -137,7 +137,7 @@ const Lockdrop = () => {
         let claimableBN = ethers.BigNumber.from(0);
 
         if (userId) {
-          const userAddress = idToAddress(userId);
+          const userAddress = await requestUserAddressFromId(userId);
 
           const promiseArray = [
             lockDropContract.claimable(userAddress),

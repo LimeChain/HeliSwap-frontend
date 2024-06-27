@@ -12,7 +12,7 @@ import Icon from '../components/Icon';
 import CreateProposal from '../components/CreateProposal';
 
 import { timestampToDateTime } from '../utils/timeUtils';
-import { idToAddress } from '../utils/tokenUtils';
+import { requestUserAddressFromId } from '../utils/tokenUtils';
 import { formatBigNumberToStringETH, formatStringETHtoPriceFormatted } from '../utils/numberUtils';
 
 import useGovernanceContract from '../hooks/useGovernanceContract';
@@ -57,10 +57,8 @@ const Governance = () => {
 
   const getKernelData = useCallback(async () => {
     try {
-      const promisesArray = [
-        kernelContract.votingPower(idToAddress(userId)),
-        kernelContract.heliStaked(),
-      ];
+      const userAddress = await requestUserAddressFromId(userId);
+      const promisesArray = [kernelContract.votingPower(userAddress), kernelContract.heliStaked()];
 
       const [votingPowerBN, totalStakedBN] = await Promise.all(promisesArray);
       const stakingPercentage = Number(votingPowerBN.toString()) / Number(totalStakedBN.toString());

@@ -142,7 +142,8 @@ export const checkAllowanceERC20 = async (
   const provider = getProvider();
   const tokenContract = new ethers.Contract(tokenAddress, ERC20.abi, provider);
 
-  const allowance = await tokenContract.allowance(idToAddress(userId), spenderAddress);
+  const userAddress = await requestUserAddressFromId(userId);
+  const allowance = await tokenContract.allowance(userAddress, spenderAddress);
   const amountToSpendBN = formatStringToBigNumberEthersWei(amountToSpend);
 
   const canSpend = amountToSpendBN.lte(allowance);
@@ -153,8 +154,9 @@ export const checkAllowanceERC20 = async (
 export const getTokenBalanceERC20 = async (tokenAddress: string, userId: string) => {
   const provider = getProvider();
   const tokenContract = new ethers.Contract(tokenAddress, ERC20.abi, provider);
+  const userAddress = await requestUserAddressFromId(userId);
 
-  const balanceBN = await tokenContract.balanceOf(idToAddress(userId));
+  const balanceBN = await tokenContract.balanceOf(userAddress);
 
   return balanceBN.toString();
 };
@@ -302,8 +304,8 @@ export const getTokenBalance = async (userId: string, tokenData: ITokenData) => 
     tokenBalance = '0';
     const provider = getProvider();
     const tokenContract = new ethers.Contract(tokenData.address, ERC20.abi, provider);
-
-    const balance = await tokenContract.balanceOf(idToAddress(userId));
+    const userAddress = await requestUserAddressFromId(userId);
+    const balance = await tokenContract.balanceOf(userAddress);
     const tokenDecimals = tokenData?.decimals;
 
     if (balance) tokenBalance = ethers.utils.formatUnits(balance, tokenDecimals).toString();
@@ -455,10 +457,26 @@ export const requestAddressFromId = async (id: string) => {
 export const requestUserAddressFromId = async (id: string) => {
   const url = `${process.env.REACT_APP_MIRROR_NODE_URL}/api/v1/accounts/${id}`;
   try {
-    const {
+    let {
       data: { evm_address },
     } = await axios(url);
+
+    // Convert to checksum address
+    evm_address = hethers.utils.getAddress(evm_address);
     return evm_address;
+  } catch (e) {
+    console.error(e);
+    return '0';
+  }
+};
+
+export const requestUserIdFromAddress = async (address: string) => {
+  const url = `${process.env.REACT_APP_MIRROR_NODE_URL}/api/v1/account${address}`;
+  try {
+    const {
+      data: { accounts },
+    } = await axios(url);
+    return accounts[0].id;
   } catch (e) {
     console.error(e);
     return '0';

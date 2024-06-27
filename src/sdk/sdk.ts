@@ -111,7 +111,7 @@ class SDK {
     const HBARAmountMin = getAmountWithSlippage(HBARAmountString, 8, slippage, true);
     const tokenAmountMin = getAmountWithSlippage(tokenAmountString, tokenDecimals, slippage, true);
 
-    const userAddress = idToAddress(userId);
+    const userAddress = await requestUserAddressFromId(userId);
     const routerId = addressToId(process.env.REACT_APP_ROUTER_ADDRESS as string);
     const maxGas = poolExists
       ? TRANSACTION_MAX_FEES.PROVIDE_LIQUIDITY
@@ -175,7 +175,7 @@ class SDK {
       true,
     );
 
-    const userAddress = idToAddress(userId);
+    const userAddress = await requestUserAddressFromId(userId);
     const routerId = addressToId(process.env.REACT_APP_ROUTER_ADDRESS as string);
     const maxGas = poolExists
       ? TRANSACTION_MAX_FEES.PROVIDE_LIQUIDITY
@@ -219,7 +219,7 @@ class SDK {
     const routerContractAddress = forMigration
       ? (process.env.REACT_APP_ROUTER_ADDRESS_OLD as string)
       : (process.env.REACT_APP_ROUTER_ADDRESS as string);
-    const userAddress = idToAddress(userId);
+    const userAddress = await requestUserAddressFromId(userId);
 
     const tokenAmountMin = getAmountWithSlippage(tokenAmount, tokenDecimals, slippage, true);
     const HBARAmountMin = getAmountWithSlippage(HBARAmount, WHBARDecimal, slippage, true);
@@ -260,7 +260,7 @@ class SDK {
     expiresAfter: number,
   ) {
     const routerContractAddress = process.env.REACT_APP_ROUTER_ADDRESS as string;
-    const userAddress = idToAddress(userId);
+    const userAddress = await requestUserAddressFromId(userId);
 
     const tokensLpAmountBN = formatStringToBigNumberWei(tokensLpAmount, 18);
 
